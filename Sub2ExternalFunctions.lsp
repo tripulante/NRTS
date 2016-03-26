@@ -54,7 +54,7 @@
 	       collect (list (first i) (first j)))))
 ;; takes a simple palette and returns the ones with time signature ts
 ;; ts is a two item list e.g. (1 4)
-(defun get-simplified-chop-by-signature (ts simplified-palette)
+(defun get-chops-by-ts (ts simplified-palette)
   (loop for i in simplified-palette
      collect (list (first i)
 		   (remove nil
@@ -65,11 +65,11 @@
 ;; returns a list with the time sequences in a simple palette
 ;; ((original-sequence-id (time-signatures)))
 (defun ts-in-chop (simplified-palette)
-  (loop for i in simplified-palette
-     collect (list (first i)
-		   (remove-duplicates
-		    (loop for j in (second i)
-		       collect (first (second j)))))))
+  (remove-duplicates
+   (loop for i in simplified-palette
+     append 
+	(loop for j in (second i)
+	   collect (first (second j))))))
 ;; returns the k-combinations of a list. k <= (length l)
 (defun k-combinations (l k)
   (reverse (loop for i in
@@ -80,3 +80,9 @@
 		     (= (length l1) (length l2)
 			(length (intersection l1 l2)))))
 	      collect (reverse i))))
+;; rotates a list according to the direction given
+;; dir = 0 means clockwise, anything else is counter-clockwise
+(defun rotate-list (l dir wrap)
+  (cond ((not dir) (wrap-list l wrap))
+	(t (wrap-list (reverse l) wrap))))
+
