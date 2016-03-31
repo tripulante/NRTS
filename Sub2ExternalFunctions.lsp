@@ -85,4 +85,13 @@
 (defun rotate-list (l dir wrap)
   (cond ((not dir) (wrap-list l wrap))
 	(t (wrap-list (reverse l) wrap))))
+;; this function implements a logistic map
+;; https://en.wikipedia.org/wiki/Logistic_map
+;; you can find more chaotic functions in https://en.wikipedia.org/wiki/Chaos_theory
+(defun logistic-map (x r)
+  (* x r (- 1 x)))
+;; this function scales values like the Max object scale
+(defun scale-value (value oldMin oldMax newMin newMax)
+  (+ (/ (* (- value oldMin)
+	   (- newMax newMin)) (- oldMax oldMin)) newMin))
 
