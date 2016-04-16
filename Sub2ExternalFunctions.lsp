@@ -83,15 +83,34 @@
 ;; rotates a list according to the direction given
 ;; dir = 0 means clockwise, anything else is counter-clockwise
 (defun rotate-list (l dir wrap)
-  (cond ((not dir) (wrap-list l wrap))
-	(t (wrap-list (reverse l) wrap))))
+  (cond ((not dir) (wrap-list l (mod wrap (length l))))
+	(t (wrap-list (reverse l) (mod wrap (length l))))))
 ;; this function implements a logistic map
 ;; https://en.wikipedia.org/wiki/Logistic_map
-;; you can find more chaotic functions in https://en.wikipedia.org/wiki/Chaos_theory
 (defun logistic-map (x r)
   (* x r (- 1 x)))
 ;; this function scales values like the Max object scale
 (defun scale-value (value oldMin oldMax newMin newMax)
   (+ (/ (* (- value oldMin)
 	   (- newMax newMin)) (- oldMax oldMin)) newMin))
+;; Runs the logistic map n times, starting from an initial x0
+;; value and then scales it to (min max) values
+;; no error checking
+(defun logistic-curve (x0 r n min max)
+  (loop repeat n
+     for x = (logistic-map x0 r)
+     then (logistic-map x r)
+     collect (round (scale-value x 0 1 min max))))
+;; returns a set of curves for a chopped palette
+(defun chop-curves (chopped-palette)
+    (loop for rsps in (data chopped-palette)
+       for id-rsps = (id rsps)
+       append
+	 (loop for rseq in (data (data rsps))
+	    for id-seq = (id rseq)
+	    collect (list (list id-rsps id-seq)
+			  (loop for pal
+			     in (data (pitch-seq-palette rseq))
+			     for curve = (data pal)
+			     collect curve)))))
 
